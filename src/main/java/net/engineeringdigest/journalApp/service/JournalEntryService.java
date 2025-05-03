@@ -1,6 +1,7 @@
 package net.engineeringdigest.journalApp.service;
 
 import net.engineeringdigest.journalApp.entity.JournalEntry;
+import net.engineeringdigest.journalApp.entity.User;
 import net.engineeringdigest.journalApp.repository.JournalEntryRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,15 @@ public class JournalEntryService {
     @Autowired
     private JournalEntryRepository journalEntryRepository;
 
-    public String saveJournalEntry(JournalEntry entry){
-        journalEntryRepository.save(entry);
-        return "Entry is saved";
+    @Autowired
+    private UserService userService;
+
+    public void saveJournalEntry(JournalEntry entry, String username){
+        User user = userService.findByUsername(username);
+
+        JournalEntry saved = journalEntryRepository.save(entry);
+        user.getJournalEntries().add(saved);
+        userService.createUser(user);
     }
 
     public List<JournalEntry> getAllEntries(){
@@ -30,7 +37,7 @@ public class JournalEntryService {
         return journalEntryRepository.findById(id);
     }
 
-    public String updateById(ObjectId id,JournalEntry newEntry){
+    public String updateById(ObjectId id, JournalEntry newEntry, String username){
         JournalEntry oldentry = journalEntryRepository.findById(id).orElse(null);
         if(newEntry!=null && oldentry!=null){
             oldentry.setContent(newEntry.getContent());
@@ -41,9 +48,11 @@ public class JournalEntryService {
         return "updated";
     }
 
-    public String deleteEntry(ObjectId id){
+    public void deleteEntry(ObjectId id, String username){
+        User user = userService.findByUsername(username);
+        user.getJournalEntries().removeIf(x->x.getId().equals(id));
+        userService.createUser(user);
         journalEntryRepository.deleteById(id);
-        return "OK";
     }
 
 }
