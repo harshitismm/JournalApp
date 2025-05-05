@@ -22,7 +22,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/journal/**,/user/**").authenticated()
+                .antMatchers("/journal/**","/user/**").authenticated()
                 .anyRequest().permitAll()
                 .and()
                 .httpBasic();
