@@ -22,7 +22,7 @@ public class UserService {
 
     public void createNewUser(User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(Arrays.asList("user"));
+        user.setRoles(Arrays.asList("USER"));
         userRepository.save(user);
     }
 
@@ -44,6 +44,12 @@ public class UserService {
 
     public List<User> getAllUsers(){
         return userRepository.findAll();
+    }
+
+    public void createNewAdminUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRoles(Arrays.asList("ADMIN","USER"));
+        userRepository.save(user);
     }
 
 //    public void updateUser(User user){
