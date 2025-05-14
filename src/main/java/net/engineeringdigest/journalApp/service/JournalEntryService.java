@@ -51,11 +51,21 @@ public class JournalEntryService {
     }
 
     @Transactional
-    public void deleteEntry(ObjectId id, String username){
-        User user = userService.findByUsername(username);
-        user.getJournalEntries().removeIf(x->x.getId().equals(id));
-        userService.createUser(user);
-        journalEntryRepository.deleteById(id);
+    public Boolean deleteEntry(ObjectId id, String username){
+        boolean removed=false;
+        try {
+            User user = userService.findByUsername(username);
+            removed = user.getJournalEntries().removeIf(x -> x.getId().equals(id));
+            if(removed){
+                userService.createUser(user);
+                journalEntryRepository.deleteById(id);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error in deleting the entry:"+e);
+        }
+        return removed;
+
+
     }
 
 }

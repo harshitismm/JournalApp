@@ -21,7 +21,7 @@ public class HealthCheck {
     @PostMapping("/signup")
     public ResponseEntity<User> createUser(@RequestBody User user){
 
-        service.createUser(user);
+        service.createNewUser(user);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
